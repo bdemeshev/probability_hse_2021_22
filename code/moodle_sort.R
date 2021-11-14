@@ -9,6 +9,7 @@ library(tidyverse)
 library(rio)
 
 setwd('~/Downloads/Q588283/')
+setwd('~/Downloads/Q594405/')
 
 stud_list = import('21-22_hse_probability.xlsx', sheet = 1)
 glimpse(stud_list)
