@@ -7,7 +7,7 @@
 # шаг 2. выгрузка фактических условий:
 # 1. клик по тесту
 # 2. клик по шестерёнке справа
-# 3. клик по "отчеты в pdf"
+# 3. клик по "отчеты в pdf" ? "выгрузка попыток в pdf"
 # иногда глючит и говорит что нет какого-то плагина wkhtmlpdf
 # лечится чем-то типа выйти и снова зайти как положено
 # 4. сформировать отчёт "для вступительных"
@@ -21,10 +21,10 @@
 library(tidyverse)
 library(rio)
 
-setwd('~/Downloads/Q588283/')
-setwd('~/Downloads/Q594405/')
+setwd('~/Downloads/kr2/Q721799/')
+setwd('~/Downloads/kr2/Q721805/')
 
-stud_list = import('21-22_hse_probability.xlsx', sheet = 1)
+stud_list = import('21-22_hse_probability - main(7).csv', sheet = 1)
 glimpse(stud_list)
 
 code_list = import('filestat.xlsx', col_names = c('mail', 'id'))
