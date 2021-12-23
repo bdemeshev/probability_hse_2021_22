@@ -8,6 +8,7 @@ library(forcats)
 
 setwd('~/Downloads/Q588283/')
 
+
 stud_list = import('21-22_hse_probability.xlsx', sheet = 1)
 glimpse(stud_list)
 

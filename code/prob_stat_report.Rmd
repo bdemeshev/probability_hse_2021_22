@@ -1,0 +1,279 @@
+---
+title: Probability and statistics report 2021-2022
+output: 
+  html_document: 
+    fig_caption: yes
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r, load packages, include=FALSE}
+library(tidyverse)
+library(rio)
+library(estimatr)
+library(lmtest)
+library(ggridges)
+library(forcats)
+library(corrplot)
+library(factoextra)
+```
+
+```{r, load data, warning=FALSE}
+stud_list = import('~/Downloads/21-22_hse_probability - main(14).csv', sheet = 1)
+stud_list = mutate(stud_list, 
+                   auditorka = as.numeric(str_replace(auditorka, ',', '.'))
+)
+```
+
+```{r, more sexy}
+# glimpse(stud_list)
+
+stud_list$sex = NA_character_
+
+female_strings = 'вна$|ова |ева |ина$|ия$|Алла|Виолетта|Русана'
+male_strings = 'ич$|ов |ев |ан$|ен$|Мустафа|Дмитрий|Александр|Лукас|Амантур|Назар|Джангир|Артём|Абзалбек|Халиужий|Габриел'
+
+stud_list = mutate(stud_list, sex = case_when(str_detect(student, male_strings) ~ 'male',
+                                              str_detect(student, female_strings) ~ 'female',
+                                              TRUE ~ sex))
+
+levs = c("БЭК201", "БЭК202", "БЭК203", "БЭК205", "БЭК206", "БЭК207", "БЭК208", "БЭК209",
+         "БЭК2010", "БЭК2011", "БЭК2012")
+
+stud_list = mutate(stud_list, sex = factor(sex),
+                   group = factor(group, levels = levs))
+stud_list = mutate(stud_list, ip = 1 * (group %in% c('БЭК201', 'БЭК202', 'БЭК203')))
+
+filter(stud_list, is.na(sex))
+stud_list_ = filter(stud_list, !is.na(sex))
+```
+
+
+
+```{r, plot by sex}
+ggplot(stud_list_, aes(col = sex, x = kr_1_test, fill = sex)) +
+  geom_density() + geom_rug(aes(y = 0), position = 'jitter', sides='b') +
+  facet_grid(sex ~ .)
+```
+
+```{r, plot by group}
+group_summary = group_by(stud_list, group) %>% summarise(av = mean(kr_1_test, na.rm = TRUE),
+                                                         sd = sd(kr_1_test, na.rm = TRUE),
+                                                         min = min(kr_1_test, na.rm = TRUE),
+                                                         max = max(kr_1_test, na.rm = TRUE),
+                                                         n = n())
+group_summary = mutate(group_summary, group_no = as.numeric(str_extract(group, '[0-9]*$')))
+group_summary = mutate(group_summary, group_text = paste0(group, '\n(n=', n, ')'))
+
+group_summary
+
+levels(stud_list_$group) = group_summary$group_text
+
+
+ggplot(stud_list_, aes(x = kr_1_test, y = sex, fill = stat(x))) +
+  geom_density_ridges_gradient(scale = 3, rel_min_height = 0.01)
+```
+
+
+```{r}
+ggplot(stud_list_, aes(x = kr_1_test, y = group, fill = stat(x))) +
+  geom_density_ridges_gradient(scale = 3, rel_min_height = 0.01) +
+  labs(title = 'Результаты тестовой части кр 1', x = 'Балл', y = '') +
+  theme(legend.position = 'none')
+```
+
+```{r}
+n_obs = nrow(stud_list_) - sum(is.na(stud_list_$kr_1_test))
+
+the_title = paste0('Результаты тестовой части кр 1 по теории вероятностей (2021 год, n = ', n_obs, ')')
+
+ggplot(stud_list_, aes(x = kr_1_test, y = group, fill = factor(stat(quantile)))) +
+  stat_density_ridges(
+    geom = "density_ridges_gradient",
+    calc_ecdf = TRUE,
+    quantiles = c(0.05, 0.95),
+    jittered_points = TRUE,
+    position = position_points_jitter(width = 0.33, height = 0.0),
+    point_shape = '|', point_size = 3, point_alpha = 1, alpha = 0.7
+  ) +
+  scale_fill_manual(
+    name = "Квантили", values = c("#FF0000A0", "#A0A0A0A0", "#0000FFA0"),
+    labels = c("Левые 5%", "Серединка", "Правые 5%")
+  ) +
+  labs(title = the_title, x = 'Балл', y = '')
+```
+
+
+```{r}
+ggplot(stud_list_, aes(x = kr_1_test, y = sex, fill = factor(stat(quantile)))) +
+  stat_density_ridges(
+    geom = "density_ridges_gradient",
+    calc_ecdf = TRUE,
+    quantiles = c(0.05, 0.95),
+    jittered_points = TRUE,
+    position = position_points_jitter(width = 0.33, height = 0.0),
+    point_shape = '|', point_size = 4, point_alpha = 1, alpha = 0.7
+  ) +
+  scale_fill_manual(
+    name = "Квантили", values = c("#FF0000A0", "#A0A0A0A0", "#0000FFA0"),
+    labels = c("Левые 5%", "Серединка", "Правые 5%")
+  ) +
+  labs(title = the_title, x = 'Балл', y = '')
+```
+
+
+```{r}
+sex_summary = group_by(stud_list, sex) %>% summarise(av = mean(kr_1_test, na.rm = TRUE),
+                                 sd = sd(kr_1_test, na.rm = TRUE),
+                                 n = n())
+sex_summary
+
+reg = lm_robust(data = stud_list_, kr_1_test ~ sex, se_type = 'HC3')
+summary(reg)
+
+bptest(data = stud_list_,
+       formula = kr_1_test ~ sex,
+       varformula = ~ sex)
+```
+
+
+
+
+
+```{r, kr2 versus group}
+n_obs = nrow(stud_list_) - sum(is.na(stud_list_$kr_2_test))
+
+the_title = paste0('Результаты тестовой части кр 2 по теории вероятностей (2021 год, n = ', n_obs, ')')
+
+ggplot(stud_list_, aes(x = kr_2_test, y = group, fill = factor(stat(quantile)))) +
+  stat_density_ridges(
+    geom = "density_ridges_gradient",
+    calc_ecdf = TRUE,
+    quantiles = c(0.05, 0.95),
+    jittered_points = TRUE,
+    position = position_points_jitter(width = 0.33, height = 0.0),
+    point_shape = '|', point_size = 3, point_alpha = 1, alpha = 0.7
+  ) +
+  scale_fill_manual(
+    name = "Квантили", values = c("#FF0000A0", "#A0A0A0A0", "#0000FFA0"),
+    labels = c("Левые 5%", "Серединка", "Правые 5%")
+  ) +
+  labs(title = the_title, x = 'Балл', y = '')
+```
+
+
+```{r, kr2 versus sex}
+ggplot(stud_list_, aes(x = kr_2_test, y = sex, fill = factor(stat(quantile)))) +
+  stat_density_ridges(
+    geom = "density_ridges_gradient",
+    calc_ecdf = TRUE,
+    quantiles = c(0.05, 0.95),
+    jittered_points = TRUE,
+    position = position_points_jitter(width = 0.33, height = 0.0),
+    point_shape = '|', point_size = 4, point_alpha = 1, alpha = 0.7
+  ) +
+  scale_fill_manual(
+    name = "Квантили", values = c("#FF0000A0", "#A0A0A0A0", "#0000FFA0"),
+    labels = c("Левые 5%", "Серединка", "Правые 5%")
+  ) +
+  labs(title = the_title, x = 'Балл', y = '')
+```
+
+
+
+
+
+
+```{r, exam versus group}
+n_obs = nrow(stud_list_) - sum(is.na(stud_list_$exam))
+
+the_title = paste0('Результаты тестовой части экзамена по теории вероятностей (2021 год, n = ', n_obs, ')')
+
+ggplot(stud_list_, aes(x = exam, y = group, fill = factor(stat(quantile)))) +
+  stat_density_ridges(
+    geom = "density_ridges_gradient",
+    calc_ecdf = TRUE,
+    quantiles = c(0.05, 0.95),
+    jittered_points = TRUE,
+    position = position_points_jitter(width = 0.33, height = 0.0),
+    point_shape = '|', point_size = 3, point_alpha = 1, alpha = 0.7
+  ) +
+  scale_fill_manual(
+    name = "Квантили", values = c("#FF0000A0", "#A0A0A0A0", "#0000FFA0"),
+    labels = c("Левые 5%", "Серединка", "Правые 5%")
+  ) +
+  labs(title = the_title, x = 'Балл', y = '')
+```
+
+
+```{r, exam versus sex}
+ggplot(stud_list_, aes(x = exam, y = sex, fill = factor(stat(quantile)))) +
+  stat_density_ridges(
+    geom = "density_ridges_gradient",
+    calc_ecdf = TRUE,
+    quantiles = c(0.05, 0.95),
+    jittered_points = TRUE,
+    position = position_points_jitter(width = 0.33, height = 0.0),
+    point_shape = '|', point_size = 4, point_alpha = 1, alpha = 0.7
+  ) +
+  scale_fill_manual(
+    name = "Квантили", values = c("#FF0000A0", "#A0A0A0A0", "#0000FFA0"),
+    labels = c("Левые 5%", "Серединка", "Правые 5%")
+  ) +
+  labs(title = the_title, x = 'Балл', y = '')
+```
+
+
+
+```{r, exam regression}
+exam_on_test = lm_robust(data = stud_list_, exam ~ kr_1_test + kr_2_test, se_type = 'HC3')
+summary(exam_on_test)
+
+exam_on_all = lm_robust(data = stud_list_, 
+      exam ~ kr_1_test + kr_2_test + kr_1_open + k2_open + domashka + auditorka,
+                        se_type = 'HC3')
+summary(exam_on_all)
+```
+
+
+```{r, correlation}
+stud_subs = select(stud_list_, exam, kr_1_test, kr_2_test, kr_1_open, k2_open, domashka, auditorka)
+M = cor(stud_subs, use = 'pairwise')
+corrplot.mixed(M, order = 'AOE')
+```
+
+```{r, scatter exam vs 1}
+the_title = 'Связь балла за экзамен и кр 1' 
+ggplot(stud_list_, aes(x = exam, y = kr_1_test, col = factor(ip))) +
+  geom_jitter() + 
+  labs(title = the_title, x = 'Балл за кр 1', y = 'Балл за экзамен')
+```
+
+```{r, scatter exam vs 2}
+the_title = 'Связь балла за экзамен и кр 2' 
+ggplot(stud_list_, aes(x = exam, y = kr_2_test, col = factor(ip))) +
+  geom_jitter() + 
+  labs(title = the_title, x = 'Балл за кр 2', y = 'Балл за экзамен')
+```
+
+
+
+```{r, scatter 1 vs 2}
+the_title = 'Связь балла за кр 1 и кр 2' 
+ggplot(stud_list_, aes(x = kr_1_test, y = kr_2_test, col = factor(ip))) +
+  geom_jitter() + 
+  labs(title = the_title, x = 'Балл за кр 1', y = 'Балл за кр 2')
+```
+
+
+```{r, pca}
+stud_subs = select(stud_list_, exam, kr_1_test, kr_2_test, 
+                   kr_1_open, k2_open, domashka, auditorka, ip)
+rownames(stud_subs) = stud_list_$student
+stud_subs_ = na.omit(stud_subs)
+stud_pca = prcomp(select(stud_subs_, -ip),  scale = TRUE)
+
+fviz_pca_biplot(stud_pca, col.ind = "#00AFBB", repel = TRUE, 
+             habillage = stud_subs_$ip, addEllipses = TRUE)
+```
+
