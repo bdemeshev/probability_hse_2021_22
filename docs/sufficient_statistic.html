@@ -61,6 +61,7 @@ ul.task-list{list-style: none;}
 <p><span class="math display">\[
 \newcommand\cN{{\mathcal{N}}}
 \newcommand\P{{\mathbb{P}}}
+\newcommand\E{{\mathbb{E}}}
 \]</span></p>
 </div>
 <div class="callout-tip callout callout-style-default callout-captioned">
@@ -249,6 +250,24 @@ f(y_1, y_2, \ldots, y_n \mid a) = g(y_1, y_2, \ldots, y_n) \cdot h(a, t).
 </div>
 </div>
 </div>
+<p>Зачем ещё полезна достаточная статистика? С помощью достаточной статистики зачастую можно улучшить другую оценку!</p>
+<div class="callout-tip callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Теорема
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Если <span class="math inline">\(\hat a\)</span> — произвольная оценка параметра <span class="math inline">\(a\)</span> (не обязательно максимального правдоподобия), а функция <span class="math inline">\(T=t(Y_1, Y_2, \ldots, Y_n)\)</span> является достаточной статистикой для параметра <span class="math inline">\(a\)</span>, то новая оценка <span class="math inline">\(\hat a' = \E(\hat a \mid T)\)</span> не хуже исходной оценки <span class="math inline">\(\hat a\)</span> по среднеквадратичной ошибке</p>
+<p><span class="math display">\[
+\E[(\hat a' - a)^2] \leq \E[(\hat a - a)^2].
+\]</span></p>
+</div>
+</div>
+<p>Правда, два раза подряд улучшить оценку не получится. Если <span class="math inline">\(\hat a' = \E(\hat a \mid T)\)</span>, то вторая попытка улучшения, <span class="math inline">\(\E(\hat a' \mid T)\)</span>, совпадёт с <span class="math inline">\(\hat a'\)</span>.</p>
 
 </main>
 <!-- /main column -->
