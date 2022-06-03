@@ -106,6 +106,36 @@ ul.task-list{list-style: none;}
 </div>
 </div>
 </div>
+<div class="callout-note callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Пример
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Величины <span class="math inline">\(Y_1\)</span>, <span class="math inline">\(Y_2\)</span>, , <span class="math inline">\(Y_n\)</span> являются случайной выборкой из равномерного распределения <span class="math inline">\(U[0; a]\)</span>.</p>
+<p>Найдите достаточную статистику для параметра <span class="math inline">\(a\)</span>.</p>
+</div>
+</div>
+<div class="callout-caution callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-5-contents" aria-controls="callout-5" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Решение
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-5" class="callout-5-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Например, достаточной статистикой будет <span class="math inline">\(T=\max\{Y_1, \ldots, Y_n\}\)</span> или <span class="math inline">\(T= 11 + 2 / \max\{Y_1, \ldots, Y_n\}\)</span>. Знания любой из этих величин достаточно, чтобы посчитать <span class="math inline">\(\hat \a\)</span>. Возможно много других вариантов достаточной статистики.</p>
+</div>
+</div>
+</div>
 <p>Перед формальным определением посмотрим на мотивирующий пример.</p>
 <div class="callout-note callout callout-style-default callout-captioned">
 <div class="callout-header d-flex align-content-center">
@@ -124,7 +154,7 @@ ul.task-list{list-style: none;}
 </div>
 </div>
 <div class="callout-caution callout callout-style-default callout-captioned">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-5-contents" aria-controls="callout-5" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-7-contents" aria-controls="callout-7" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -133,7 +163,7 @@ ul.task-list{list-style: none;}
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-5" class="callout-5-contents callout-collapse collapse">
+<div id="callout-7" class="callout-7-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>Выборка <span class="math inline">\((Y_i)\)</span> полезна, а выборка <span class="math inline">\((W_i)\)</span> — бесполезна.</p>
 </div>
@@ -169,7 +199,7 @@ ul.task-list{list-style: none;}
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Функция <span class="math inline">\(T=t(Y_1, Y_2, \ldots, Y_n)\)</span> является достаточной статистикой для параметра <span class="math inline">\(a\)</span>, если и только если совместная функция плотности наблюдений представима в виде</p>
+<p>Функция <span class="math inline">\(T=t(Y_1, Y_2, \ldots, Y_n)\)</span> является достаточной статистикой для параметра <span class="math inline">\(a\)</span>, если и только если совместная функция плотности наблюдений представима в виде произведения двух функций</p>
 <p><span class="math display">\[
 f(y_1, y_2, \ldots, y_n \mid a) = g(y_1, y_2, \ldots, y_n) \cdot h(a, t).
 \]</span></p>
@@ -198,7 +228,7 @@ f(y_1, y_2, \ldots, y_n \mid a) = g(y_1, y_2, \ldots, y_n) \cdot h(a, t).
 </div>
 </div>
 <div class="callout-caution callout callout-style-default callout-captioned">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-9-contents" aria-controls="callout-9" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-11-contents" aria-controls="callout-11" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -207,7 +237,7 @@ f(y_1, y_2, \ldots, y_n \mid a) = g(y_1, y_2, \ldots, y_n) \cdot h(a, t).
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-9" class="callout-9-contents callout-collapse collapse">
+<div id="callout-11" class="callout-11-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p><span class="math display">\[
 \P(Y_1 = y_1, Y_2 = y_2, \ldots,  Y_n = y_n \mid T= t) =
